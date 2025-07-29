@@ -1,74 +1,6 @@
-# MongoDB plugin for Genkit
+# MongoDB Plugin for Genkit
 
-A comprehensive MongoDB plugin for Genkit that provides vector search, text search, hybrid search, CRUD operations, and search index management capabilities.
-
-## Prerequisites
-
-- MongoDB 6.0+ with Atlas Search or local search indexes
-- Node.js 18+
-- Genkit framework
-
-> **Note**: The plugin itself only requires the above prerequisites. The Google Cloud Project and Google AI API access mentioned in the testapp examples are only needed for the multimodal processing examples (image and document flows) in the test application.
-
-## Project Structure
-
-This repository contains two main components:
-
-### 1. Plugin (`plugin/`)
-
-The MongoDB plugin library that can be installed and used in your Genkit applications.
-
-**What it is:**
-
-- A reusable library/plugin for Genkit
-- Can be built but not run directly
-- Designed to be imported and configured in applications
-- Provides MongoDB integration capabilities
-
-**How to use:**
-
-```bash
-# Install the plugin in your project
-pnpm add genkitx-mongodb
-
-# Build the plugin (for development)
-cd plugin
-pnpm run build
-```
-
-### 2. Test Application (`testapp/`)
-
-A comprehensive demonstration application that showcases all the plugin's capabilities.
-
-**What it is:**
-
-- A complete Genkit application that uses the plugin
-- Demonstrates all features with working examples
-- Can be run and interacted with via Genkit UI
-- Includes sample data and workflows
-
-**How to use:**
-
-```bash
-# Install dependencies
-cd testapp
-pnpm install
-
-# Build the application
-pnpm run build
-
-# Run in development mode
-pnpm run dev
-
-# Start with Genkit UI
-pnpm run start
-```
-
-## Installing the plugin
-
-```bash
-pnpm add genkitx-mongodb
-```
+A comprehensive MongoDB plugin for the Genkit AI framework that provides vector search, text search, hybrid search, CRUD operations, and search index management capabilities.
 
 ## Features
 
@@ -84,66 +16,35 @@ pnpm add genkitx-mongodb
 - **Multimodal Support**: Process images and documents with multimodal embeddings
 - **Pipeline Support**: Custom aggregation pipelines for advanced querying
 
-## Getting Started
+## Prerequisites
 
-### For Plugin Users (Most Common)
+- MongoDB 6.0+ with Atlas Search or local search indexes
+- Node.js 18+
+- Genkit framework
 
-If you want to use the MongoDB plugin in your own Genkit application:
-
-1. **Install the plugin:**
-
-```bash
-pnpm add genkitx-mongodb
-```
-
-2. **Follow the usage examples below** to integrate it into your Genkit application
-
-3. **Optional:** Check out the testapp for comprehensive examples and workflows
-
-### For Developers/Contributors
-
-If you want to explore, test, or contribute to the plugin:
-
-1. **Clone the repository:**
-
-   ```bash
-   git clone <repository-url>
-   cd genkitx-mongodb
-   ```
-
-2. **Build the plugin:**
+## Installation
 
 ```bash
-cd plugin
 pnpm install
-pnpm run build
 ```
 
-3. **Run the test application:**
+## Building the Plugin
 
-   ```bash
-   cd testapp
-   pnpm install
-   pnpm run build
-   pnpm run start
-   ```
+This is a plugin library that can be built but not run directly. To build the plugin:
 
-4. **Explore the examples** in the testapp to see all features in action
+```bash
+pnpm build
+```
 
-### For Learning/Testing
+This will compile the TypeScript code and generate the distribution files.
 
-If you want to understand how the plugin works and test its capabilities:
+**Note**: This plugin is designed to be used within applications that integrate with the Genkit framework. You cannot run this plugin directly - you need to use it in an application that imports and configures the plugin. eg: testapp
 
-1. **Start with the testapp** - it's a complete working example
-2. **Follow the testapp README** for detailed setup and usage instructions
-3. **Use the Genkit UI** to interact with all the features
-4. **Examine the code** to understand how to integrate the plugin in your own applications
-
-## Using the plugin
+## Quick Start
 
 ### Basic Setup
 
-```ts
+```typescript
 import { genkit } from "genkit";
 import { mongodb } from "genkitx-mongodb";
 import { googleAI } from "@genkit-ai/googleai";
@@ -153,9 +54,6 @@ const ai = genkit({
     mongodb([
       {
         url: "mongodb://localhost:27017",
-        mongoClientOptions: {
-          // Optional MongoDB client options
-        },
         indexer: {
           id: "indexer",
           retry: {
@@ -183,51 +81,9 @@ const ai = genkit({
 });
 ```
 
-### Multiple Connections
-
-You can configure multiple MongoDB connections with different settings:
-
-```ts
-mongodb([
-  {
-    url: "mongodb://primary:27017",
-    indexer: {
-      id: "primary-indexer",
-      retry: {
-        retryAttempts: 3,
-        baseDelay: 1000,
-      },
-    },
-    retriever: {
-      id: "primary-retriever",
-      retry: {
-        retryAttempts: 2,
-        baseDelay: 500,
-      },
-    },
-    crudTools: { id: "primary-crud" },
-    searchIndexTools: { id: "primary-search" },
-  },
-  {
-    url: "mongodb://secondary:27017",
-    indexer: {
-      id: "secondary-indexer",
-      retry: {
-        retryAttempts: 5,
-        baseDelay: 2000,
-        jitterFactor: 0.2,
-      },
-    },
-    retriever: { id: "secondary-retriever" },
-    crudTools: { id: "secondary-crud" },
-    searchIndexTools: { id: "secondary-search" },
-  },
-]);
-```
-
 ### Indexing Documents
 
-```ts
+```typescript
 import { Document } from "genkit";
 import { mongoIndexerRef } from "genkitx-mongodb";
 
@@ -255,7 +111,7 @@ await ai.index({
 
 ### Vector Search
 
-```ts
+```typescript
 import { mongoRetrieverRef } from "genkitx-mongodb";
 
 const results = await ai.retrieve({
@@ -279,7 +135,7 @@ const results = await ai.retrieve({
 
 ### Text Search
 
-```ts
+```typescript
 const results = await ai.retrieve({
   retriever: mongoRetrieverRef("retriever"),
   query: "search query",
@@ -307,7 +163,7 @@ const results = await ai.retrieve({
 
 The plugin supports hybrid search using MongoDB's `$rankFusion` aggregation, which combines vector and text search results for enhanced retrieval:
 
-```ts
+```typescript
 const results = await ai.retrieve({
   retriever: mongoRetrieverRef("retriever"),
   query: "search query",
@@ -346,36 +202,11 @@ const results = await ai.retrieve({
 });
 ```
 
-#### Hybrid Search Configuration
-
-The hybrid search combines the strengths of both vector and text search:
-
-- **Vector Pipeline**: Uses semantic similarity for finding conceptually related content
-- **Text Pipeline**: Uses exact text matching with fuzzy search capabilities
-- **Rank Fusion**: Combines results using configurable weights and scoring
-- **Score Details**: Optional detailed scoring information for debugging
-
-#### Hybrid Search Options
-
-```ts
-{
-  search: TextSearchOptions,           // Text search configuration
-  vectorSearch: VectorSearchOptions,   // Vector search configuration
-  combination?: {
-    weights?: {
-      vectorPipeline?: number,         // Weight for vector results (0-1, default: 0.5)
-      fullTextPipeline?: number,       // Weight for text results (0-1, default: 0.5)
-    },
-  },
-  scoreDetails?: boolean,              // Include score details (default: false)
-}
-```
-
-### CRUD Operations by Document ID
+### CRUD Operations
 
 The plugin provides tools for basic CRUD operations by document ID:
 
-```ts
+```typescript
 // Create a document
 await ai.runTool({
   name: "mongodb/crud/create",
@@ -420,7 +251,7 @@ await ai.runTool({
 
 ### Search Index Management
 
-```ts
+```typescript
 // Create a search index
 await ai.runTool({
   name: "mongodb/search-index/create",
@@ -462,11 +293,93 @@ await ai.runTool({
 });
 ```
 
+## Configuration
+
+### Connection Configuration
+
+```typescript
+{
+  url: string;                   // MongoDB connection string
+  mongoClientOptions?: object;   // MongoDB client options
+  indexer?: BaseDefinition;      // Indexer configuration
+  retriever?: BaseDefinition;    // Retriever configuration
+  crudTools?: BaseDefinition;    // CRUD tools configuration
+  searchIndexTools?: BaseDefinition; // Search index tools configuration
+}
+```
+
+### Multiple Connections
+
+You can configure multiple MongoDB connections with different settings:
+
+```typescript
+mongodb([
+  {
+    url: "mongodb://primary:27017",
+    indexer: {
+      id: "primary-indexer",
+      retry: {
+        retryAttempts: 3,
+        baseDelay: 1000,
+      },
+    },
+    retriever: {
+      id: "primary-retriever",
+      retry: {
+        retryAttempts: 2,
+        baseDelay: 500,
+      },
+    },
+    crudTools: { id: "primary-crud" },
+    searchIndexTools: { id: "primary-search" },
+  },
+  {
+    url: "mongodb://secondary:27017",
+    indexer: {
+      id: "secondary-indexer",
+      retry: {
+        retryAttempts: 5,
+        baseDelay: 2000,
+        jitterFactor: 0.2,
+      },
+    },
+    retriever: { id: "secondary-retriever" },
+    crudTools: { id: "secondary-crud" },
+    searchIndexTools: { id: "secondary-search" },
+  },
+]);
+```
+
+### Base Definition Configuration
+
+Each component (indexer, retriever, crudTools, searchIndexTools) uses a base definition:
+
+```typescript
+{
+  id: string;                    // Unique identifier for the component
+  retry?: RetryOptions;          // Optional retry options for this component
+}
+```
+
+### Retry Options
+
+Retry options can be configured for individual components:
+
+```typescript
+{
+  retryAttempts?: number;        // Number of retry attempts (default: 0)
+  baseDelay?: number;            // Base delay in milliseconds (default: 1000)
+  jitterFactor?: number;         // Jitter factor for exponential backoff (default: 0.1)
+}
+```
+
+## Advanced Usage
+
 ### Multimodal Document Processing
 
 The plugin supports multimodal embeddings for processing images and documents:
 
-```ts
+```typescript
 import { multimodalEmbedding001 } from "@genkit-ai/vertexai";
 
 // Index images with multimodal embeddings
@@ -502,35 +415,70 @@ const results = await ai.retrieve({
 });
 ```
 
+### Custom Field Configuration
+
+```typescript
+// Use custom field names for different data types
+await ai.index({
+  indexer: mongoIndexerRef("indexer"),
+  documents: imageDocuments,
+  options: {
+    dbName: "myDatabase",
+    collectionName: "images",
+    embedder: multimodalEmbedding001,
+    embeddingField: "imageEmbedding",
+    dataField: "imageData",
+    metadataField: "imageMetadata",
+    dataTypeField: "imageType",
+    skipData: false, // Store original image data
+  },
+});
+
+// Retrieve with custom field mapping
+const results = await ai.retrieve({
+  retriever: mongoRetrieverRef("retriever"),
+  query: "find similar images",
+  options: {
+    dbName: "myDatabase",
+    collectionName: "images",
+    embedder: multimodalEmbedding001,
+    dataField: "imageData",
+    metadataField: "imageMetadata",
+    dataTypeField: "imageType",
+    vectorSearch: {
+      index: "image_vector_index",
+      path: "imageEmbedding",
+      numCandidates: 20,
+      limit: 5,
+    },
+  },
+});
+```
+
+### Tool References
+
+The plugin provides helper functions to generate tool references:
+
+```typescript
+import {
+  mongoCrudToolsRefArray,
+  mongoSearchIndexToolsRefArray,
+} from "genkitx-mongodb";
+
+// Get all CRUD tool references for a connection
+const crudTools = mongoCrudToolsRefArray("my-connection-id");
+// Returns: ['mongodb/my-connection-id/create', 'mongodb/my-connection-id/read', ...]
+
+// Get all search index tool references for a connection
+const searchIndexTools = mongoSearchIndexToolsRefArray("my-connection-id");
+// Returns: ['mongodb/my-connection-id/create', 'mongodb/my-connection-id/list', ...]
+```
+
 ## Configuration Options
-
-### Connection Configuration
-
-```ts
-{
-  url: string;                   // MongoDB connection string
-  mongoClientOptions?: object;   // MongoDB client options
-  indexer?: BaseDefinition;      // Indexer configuration
-  retriever?: BaseDefinition;    // Retriever configuration
-  crudTools?: BaseDefinition;    // CRUD tools configuration
-  searchIndexTools?: BaseDefinition; // Search index tools configuration
-}
-```
-
-### Base Definition Configuration
-
-Each component (indexer, retriever, crudTools, searchIndexTools) uses a base definition:
-
-```ts
-{
-  id: string;                    // Unique identifier for the component
-  retry?: RetryOptions;          // Optional retry options for this component
-}
-```
 
 ### Indexer Options
 
-```ts
+```typescript
 {
   dbName: string;                // Database name
   dbOptions?: object;            // Database options
@@ -549,7 +497,7 @@ Each component (indexer, retriever, crudTools, searchIndexTools) uses a base def
 
 ### Retriever Options
 
-```ts
+```typescript
 {
   dbName: string;                // Database name
   dbOptions?: object;            // Database options
@@ -599,7 +547,7 @@ Each component (indexer, retriever, crudTools, searchIndexTools) uses a base def
 
 ### CRUD Tool Options
 
-```ts
+```typescript
 // Create
 {
   dbName: string;                // Database name
@@ -640,7 +588,7 @@ Each component (indexer, retriever, crudTools, searchIndexTools) uses a base def
 
 ### Search Index Tool Options
 
-```ts
+```typescript
 // Create
 {
   dbName: string;                // Database name
@@ -668,216 +616,6 @@ Each component (indexer, retriever, crudTools, searchIndexTools) uses a base def
   indexName: string;             // Index name to drop
 }
 ```
-
-### Retry Options
-
-Retry options can be configured for individual components (indexer, retriever, crudTools, searchIndexTools):
-
-```ts
-{
-  retryAttempts?: number;        // Number of retry attempts (default: 0)
-  baseDelay?: number;            // Base delay in milliseconds (default: 1000)
-  jitterFactor?: number;         // Jitter factor for exponential backoff (default: 0.1)
-}
-```
-
-Each component can have its own retry configuration, allowing fine-grained control over retry behavior for different operations.
-
-## Tool References
-
-The plugin provides helper functions to generate tool references:
-
-```ts
-import {
-  mongoCrudToolsRefArray,
-  mongoSearchIndexToolsRefArray,
-} from "genkitx-mongodb";
-
-// Get all CRUD tool references for a connection
-const crudTools = mongoCrudToolsRefArray("my-connection-id");
-// Returns: ['mongodb/my-connection-id/create', 'mongodb/my-connection-id/read', ...]
-
-// Get all search index tool references for a connection
-const searchIndexTools = mongoSearchIndexToolsRefArray("my-connection-id");
-// Returns: ['mongodb/my-connection-id/create', 'mongodb/my-connection-id/list', ...]
-```
-
-## Advanced Usage Examples
-
-### Hybrid Search with Custom Weights
-
-```ts
-// Configure hybrid search with custom pipeline weights
-const results = await ai.retrieve({
-  retriever: mongoRetrieverRef("retriever"),
-  query: "find documents about machine learning",
-  options: {
-    dbName: "myDatabase",
-    collectionName: "myCollection",
-    embedder: googleAI.embedder("text-embedding-004"),
-    hybridSearch: {
-      search: {
-        index: "content_search_index",
-        text: {
-          path: "content",
-          fuzzy: { maxEdits: 1, maxExpansions: 20 },
-        },
-      },
-      vectorSearch: {
-        index: "content_vector_index",
-        path: "embedding",
-        numCandidates: 50,
-        limit: 20,
-      },
-      combination: {
-        weights: {
-          vectorPipeline: 0.8, // Prioritize semantic similarity
-          fullTextPipeline: 0.2, // Lower weight for exact matches
-        },
-      },
-      scoreDetails: true, // Enable detailed scoring for analysis
-    },
-    pipelines: [{ $limit: 10 }, { $sort: { score: -1 } }],
-  },
-});
-```
-
-### Multiple Connection Strategy
-
-```ts
-// Configure different connections for different use cases
-mongodb([
-  {
-    url: "mongodb://primary:27017",
-    indexer: {
-      id: "primary-indexer",
-      retry: { retryAttempts: 5, baseDelay: 2000 },
-    },
-    retriever: {
-      id: "primary-retriever",
-      retry: { retryAttempts: 3, baseDelay: 1000 },
-    },
-  },
-  {
-    url: "mongodb://analytics:27017",
-    indexer: {
-      id: "analytics-indexer",
-      retry: { retryAttempts: 10, baseDelay: 5000 },
-    },
-    retriever: {
-      id: "analytics-retriever",
-      retry: { retryAttempts: 2, baseDelay: 500 },
-    },
-  },
-]);
-```
-
-### Custom Field Configuration
-
-```ts
-// Use custom field names for different data types
-await ai.index({
-  indexer: mongoIndexerRef("indexer"),
-  documents: imageDocuments,
-  options: {
-    dbName: "myDatabase",
-    collectionName: "images",
-    embedder: multimodalEmbedding001,
-    embeddingField: "imageEmbedding",
-    dataField: "imageData",
-    metadataField: "imageMetadata",
-    dataTypeField: "imageType",
-    skipData: false, // Store original image data
-  },
-});
-
-// Retrieve with custom field mapping
-const results = await ai.retrieve({
-  retriever: mongoRetrieverRef("retriever"),
-  query: "find similar images",
-  options: {
-    dbName: "myDatabase",
-    collectionName: "images",
-    embedder: multimodalEmbedding001,
-    dataField: "imageData",
-    metadataField: "imageMetadata",
-    dataTypeField: "imageType",
-    vectorSearch: {
-      index: "image_vector_index",
-      path: "imageEmbedding",
-      numCandidates: 20,
-      limit: 5,
-    },
-  },
-});
-```
-
-## Examples and Test Application
-
-### Complete Working Examples
-
-The [test application](./testapp) provides comprehensive, working examples of all plugin features:
-
-#### Core Features Demonstrated
-
-- **Menu Understanding**: Restaurant menu analysis with vector, text, and hybrid search
-- **Image Processing**: Multimodal image indexing and similarity search
-- **Document Processing**: PDF document processing with text chunking and image extraction
-- **CRUD Operations**: Create, read, update, and delete documents by ID
-- **Search Index Management**: Create, list, and drop search indexes
-
-#### What the Test App Provides
-
-- **Interactive UI**: Use Genkit UI to test all features
-- **Sample Data**: Pre-configured examples for each feature
-- **Complete Workflows**: End-to-end demonstrations
-- **Environment Setup**: Detailed configuration examples
-- **Code Examples**: Real implementation patterns you can adapt
-
-#### Getting Started with Examples
-
-1. **Quick Start**: Follow the [testapp README](./testapp/README.md) for setup
-2. **Interactive Testing**: Use `pnpm run start` to launch the Genkit UI
-3. **Code Study**: Examine the source code to understand integration patterns
-4. **Customization**: Adapt the examples for your own use cases
-
-The testapp serves as both a demonstration and a reference implementation for the plugin.
-
-### Environment Variables
-
-The test application requires different environment variables depending on the features you want to use:
-
-#### Required for all features:
-
-```env
-MONGODB_URL=mongodb://localhost:27017
-MONGODB_DB_NAME=your_database_name
-MONGODB_COLLECTION_NAME=your_collection_name
-MONGODB_IMAGE_COLLECTION_NAME=your_image_collection
-MONGODB_DOCUMENT_COLLECTION_NAME=your_document_collection
-```
-
-#### Required for image and document flows (multimodal processing):
-
-```env
-PROJECT_ID=your_google_cloud_project_id
-LOCATION=us-central1
-GOOGLE_APPLICATION_CREDENTIALS=path/to/your/service-account-key.json
-```
-
-#### Required for text flows (menu understanding):
-
-```env
-GEMINI_API_KEY=your_gemini_api_key
-```
-
-### Example Workflows
-
-1. **Menu Analysis**: Index menu items and perform semantic, text, and hybrid search
-2. **Image Search**: Index images with descriptions and find similar images
-3. **Document Processing**: Process PDF documents with text extraction and image extraction
-4. **Database Management**: Perform CRUD operations on documents
-5. **Search Index Management**: Create and manage search indexes
 
 ## License
 

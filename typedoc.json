@@ -1,0 +1,19 @@
+{
+  "entryPoints": ["plugin/"],
+  "name": "MongoDB Plugin Reference",
+  "out": "mongodb-plugin",
+  "entryPointStrategy": "packages",
+  "includeVersion": false,
+  "sort": ["kind", "instance-first", "alphabetical"],
+  "sortEntryPoints": true,
+  "readme": "README.md",
+  "plugin": ["typedoc-plugin-zod", "typedoc-github-theme"],
+  "navigation": {
+    "includeCategories": false,
+    "includeGroups": false,
+    "includeFolders": false,
+    "compactFolders": false,
+    "excludeReferences": true
+  },
+  "categorizeByGroup": false
+}

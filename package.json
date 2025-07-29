@@ -1,0 +1,37 @@
+{
+  "private": true,
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "format": "(prettier . --write) && (tsx scripts/copyright.ts)",
+    "format:check": "(prettier . --check) && (tsx scripts/copyright.ts --check)",
+    "build": "pnpm install && pnpm build:plugin && pnpm build:testapp",
+    "build:plugin": "pnpm -r --workspace-concurrency -1 -F \"./plugin/**\" build",
+    "build:testapp": "pnpm -r --workspace-concurrency -1 -F \"./testapp/**\" build",
+    "test:all": "pnpm -r --workspace-concurrency -1 -F \"./(plugin|testapp)/**\" test",
+    "gendocs": "pnpm build && pnpm typedoc",
+    "typedoc-html": "typedoc --sortEntryPoints false --options typedoc.json"
+  },
+  "devDependencies": {
+    "@types/node": "^18.19.0",
+    "npm-run-all": "^4.1.5",
+    "only-allow": "^1.2.1",
+    "tsx": "^4.20.3",
+    "typedoc": "^0.27.9",
+    "typedoc-github-theme": "^0.2.1",
+    "typedoc-plugin-markdown": "^4.6.4",
+    "typedoc-plugin-zod": "^1.4.2",
+    "typescript": "^4.9.5",
+    "prettier": "^3.5.3",
+    "prettier-plugin-css-order": "2.0.1",
+    "prettier-plugin-organize-imports": "^3.2.4"
+  },
+  "pnpm": {
+    "overrides": {
+      "cross-spawn": "^7.0.5"
+    }
+  },
+  "packageManager": "pnpm@10.11.0+sha256.a69e9cb077da419d47d18f1dd52e207245b29cac6e076acedbeb8be3b1a67bd7"
+}
